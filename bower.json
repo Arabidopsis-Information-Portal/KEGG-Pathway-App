@@ -1,5 +1,7 @@
 {
   "name": "testapp",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "datatables": "~1.10.3"
+  }
 }
