@@ -21,12 +21,12 @@
     //console.log(json.obj.result);
     var html = '<table> <thead><tr>'+
                 '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th>' +
-                '</tr></thead><tbody>'
+                '</tr></thead><tbody>';
 
     for (var i = 0; i < json.obj.result.length; i++) {
       var entry = json.obj.result[i];
       //console.log(json.obj.result[entry]);
-      html += '<tr><td>' + entry.KEGG_pathway_id + '</td><td>' + entry.KEGG_pathway_name + '</td></tr>\n';
+      html += '<tr><td>' + entry.identifier + '</td><td>' + entry.name + '</td></tr>\n';
     }
     html += '</tbody></table>';
     console.log('hello');
@@ -44,7 +44,7 @@
 
     Agave.api.adama.search(
               {'namespace': 'bliu',
-    	   'service': 'pathway_v0.1',
+    	   'service': 'pathway_v0.2',
     	   'queryParams': {}},
     	  showSearchResult1,
     	  showSearchError
