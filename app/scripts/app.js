@@ -28,7 +28,7 @@
       //console.log(json.obj.result[entry]);
       html += '<tr><td>' + entry.identifier + '</td><td>' + entry.name + '</td>\n' +
               '<td><button type="button" class="btn btn-default btn-xs" '+ 'data-toggle="modal" data-target="#exampleModal" '+
-              'data-id="' + entry.identifier + '" data-name="' + entry.name + '">Show</button></td></tr>\n'
+              'data-id="' + entry.identifier + '" data-name="' + entry.name + '">Show</button></td></tr>\n';
     }
     html += '</tbody></table>';
     console.log('hello');
@@ -42,10 +42,11 @@
     var id = button.data('id'); // Extract info from data-* attributes
     var name = button.data('name');
 
-    var modal = $(this)
+    var modal = $(this);
     modal.find('.modal-title').text('Pathway Map of ' + name);
-    modal.find('.modal-body').html('<img src="http://rest.kegg.jp/get/map' + id + '/image">')
-  })
+    modal.find('.modal-body').html('<img src="http://rest.kegg.jp/get/map' + id + '/image"><br/>' +
+                  '<a href="http://www.kegg.jp/kegg-bin/highlight_pathway?map=map' + id  +'">Image at KEGG</a>');
+  });
 
 
   window.addEventListener('Agave::ready', function() {
@@ -57,7 +58,7 @@
 
     $('form[name=taxon_form]').on('submit', function(e) {
       e.preventDefault();
-      $('.data', appContext).html("Reloading...");
+      $('.data', appContext).html('Reloading...');
 
       var query = {
         'taxon_id': this.taxonId.value,
