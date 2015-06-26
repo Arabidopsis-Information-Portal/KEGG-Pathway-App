@@ -33,7 +33,7 @@
     html += '</tbody></table>';
     console.log('hello');
     $('.data', appContext).html(html);
-    $('.data table', appContext).DataTable();
+    $('.data table', appContext).DataTable({'columnDefs': [ { 'targets': 2, 'orderable': false } ]});
   };
 
 
@@ -71,7 +71,7 @@
       $('.gene_results').empty();
       $('.error').empty();
       Agave.api.adama.search(
-                {'namespace': 'bliu',
+                {'namespace': 'bliu-dev',
       	   'service': 'pathway_v0.2',
       	   'queryParams': query},
       	  showSearchResult1,
@@ -82,7 +82,7 @@
 
 
     Agave.api.adama.search(
-              {'namespace': 'bliu',
+              {'namespace': 'bliu-dev',
     	   'service': 'pathway_v0.2',
     	   'queryParams': {}},
     	  showSearchResult1,
