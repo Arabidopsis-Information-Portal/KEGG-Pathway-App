@@ -3,6 +3,6 @@
   "private": true,
   "dependencies": {
     "datatables": "~1.10.3",
-    "datatables-bootstrap3-plugin": "*"
+    "datatables-bootstrap3": "*"
   }
 }
