@@ -7,7 +7,8 @@
     // Later, display an error to the user. For now, display an error on the developer console.
     console.error('Search returned error! Status=' + json.obj.status + ' Message=' + json.obj.message);
     console.log(json);
-    $('.data', appContext).html(json.obj.message);
+    var html = '<div class="alert alert-danger" role="alert">' + json.obj.message + '</div>';
+    $('.data', appContext).html(html);
   };
 
 
@@ -55,7 +56,7 @@
                 '  <a role="button" data-toggle="collapse" href="#' + entry.identifier +
                 '" aria-expanded="false" aria-controls="' + entry.identifier + '" id="b' + entry.identifier + '">' +
                 '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><br>\n' +
-                '<div id="' + entry.identifier + '" class="blah collapse">Loading...</div></td>' +
+                '<div id="' + entry.identifier + '" class="pinfo collapse">Loading...</div></div></td>' +
                 '<td><button type="button" class="btn btn-default btn-xs" '+ 'data-toggle="modal" data-target="#exampleModal" '+
                 'data-id="' + entry.identifier + '" data-name="' + entry.name + '" data-org="' + entry.organism + '">Show</button></td></tr>\n';
       }
@@ -63,31 +64,82 @@
       $('.data', appContext).html(html);
 
 
-      $('.blah').on('show.bs.collapse', function() {
+      $('.pinfo').on('show.bs.collapse', function() {
         var id = $(this).attr('id');
         var data = $(this);
 
         var showPathwayInfo = function(json) {
-          var fields = json.obj.result[0].fields;
-          var html = '';
-          for (var i = 0; i < fields.length; i++) {
-            html += '  - ' + fields[i] + '<br>\n';
+          var results = json.obj.result[0];
+          var fields = Object.keys(results);
+          var order = ['name', 'description', 'class', 'organism', 'ko_pathway'];
+          var html = '<dl>';
+          for (var i = 0; i < order.length; i++) {
+            if (fields.indexOf(order[i]) !== -1) {
+              html += '<dt>' + order[i] + '</dt><dd>' + results[order[i]] + '</dd>\n';
+            }
           }
-          data.html(html);
+          if (fields.indexOf('organism') !== -1) {
+            html += '<dt>genes <a role="button" data-toggle="collapse" href="#' + id +
+            '-gene" aria-expanded="false" aria-controls="' + id + '-gene" id="g' + id + '">' +
+            '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><dt>\n' +
+            '<dd><div id="' + id + '-gene" class="genes collapse">Loading...</div></dd>';
+            html += '</dl>';
+            data.html(html);
 
+            $('.genes').on('show.bs.collapse', function() {
+              var id = $(this).attr('id');
+              id = id.substring(0, id.length - 5);
+              var data2 = $(this);
+              console.log(id);
+              var showGenes = function(json) {
+
+                var html2 = '<dl class="dl-horizontal">';
+                var results = json.obj.result;
+                for (var i = 0; i < results.length; i++) {
+                  html2 += '<dt>' + results[i].locus + '</dt><dd>' + results[i].gene + '</dd>\n';
+                }
+                data2.html(html2+'</dl>');
+              };
+
+              query = {'pathway_id':id, 'taxon_id': $('#taxonId').val()};
+
+
+              if ($(this).html() === 'Loading...') {
+                Agave.api.adama.search(
+                          {'namespace': 'bliu-dev',
+                     'service': 'genes_by_kegg_pathway_v0.1',
+                     'queryParams': query},
+                    showGenes,
+                    showSearchError
+                      );
+              }
+              $('#g' + id).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
+
+
+            });
+            $('.genes').on('hide.bs.collapse', function() {
+              var id = $(this).attr('id');
+              $('#g'+id).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
+            });
+
+          } else {
+            html += '</dl>';
+
+            data.html(html);
+          }
         };
         var query;
         if ($('#taxonId').val() === '') {
-          query = {'identifier':id};
+          query = {'pathway_id':id};
         } else {
-          query = {'identifier':id, 'taxon_id': $('#taxonId').val()};
+          query = {'pathway_id':id, 'taxon_id': $('#taxonId').val()};
         }
 
 
         if ($(this).html() === 'Loading...') {
           Agave.api.adama.search(
                     {'namespace': 'bliu-dev',
-               'service': 'pathway_v0.2',
+               'service': 'kegg_pathways_v0.3',
                'queryParams': query},
               showPathwayInfo,
               showSearchError
@@ -95,7 +147,7 @@
         }
         $('#b' + id).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
       });
-      $('.blah').on('hide.bs.collapse', function() {
+      $('.pinfo').on('hide.bs.collapse', function() {
         var id = $(this).attr('id');
         $('#b'+id).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
       });
@@ -120,7 +172,7 @@
       $('.error').empty();
       Agave.api.adama.search(
                 {'namespace': 'bliu-dev',
-      	   'service': 'pathway_v0.2',
+      	   'service': 'kegg_pathways_v0.3',
       	   'queryParams': query},
       	  showSearchResult1,
       	  showSearchError
@@ -134,7 +186,7 @@
         $('.data', appContext).html('Reloading...');
         Agave.api.adama.search(
                   {'namespace': 'bliu-dev',
-        	   'service': 'pathway_v0.2',
+        	   'service': 'kegg_pathways_v0.3',
         	   'queryParams': {}},
         	  showSearchResult1,
         	  showSearchError
@@ -144,7 +196,7 @@
 
     Agave.api.adama.search(
               {'namespace': 'bliu-dev',
-    	   'service': 'pathway_v0.2',
+    	   'service': 'kegg_pathways_v0.3',
     	   'queryParams': {}},
     	  showSearchResult1,
     	  showSearchError
