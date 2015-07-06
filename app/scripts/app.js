@@ -12,16 +12,16 @@
   };
 
 
-
-
+  var organism = null;
+  var input = null;
 
 
   $('#exampleModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
     var id = button.data('id'); // Extract info from data-* attributes
     var name = button.data('name');
-    var org = button.data('org');
-    if (org === null){
+    var org = organism;
+    if (organism === null){
       org = 'map';
     }
     var modal = $(this);
@@ -36,7 +36,39 @@
 
     Agave = window.Agave;
 
-    //appContext.html('<h2>Hello AIP Science App &plus; Agave API!</h2><div class="api-help list-group"></div><hr><div class="api-info"></div><br>');
+
+    var getOrgCode = function(json) {
+
+      if (input === '') {
+        organism = null;
+        showSearchResult1(json);
+
+      } else {
+
+        var path = json.obj.result[0];
+        var showOrgPathways = function(json2) {
+          var org = json2.obj.result[0].organism;
+          var index = org.indexOf('[');
+          organism = org.substring(index+4, index+7);
+          showSearchResult1(json);
+
+        };
+        var query = {'pathway_id':path.identifier, 'taxon_id':input};
+
+        Agave.api.adama.search(
+                {'namespace': 'bliu-dev',
+                'service': 'kegg_pathways_v0.3',
+                'queryParams': query},
+                showOrgPathways,
+                showSearchError
+              );
+
+
+
+      }
+    };
+
+
 
     var showSearchResult1 = function(json) {
       // JavaScript === and !== operators test value and type.
@@ -44,21 +76,20 @@
           console.log('Search result status is NOT good!');
           return (false);
       }
-      //console.log(json.obj.result);
+
       var html = '<table class="table hover row-border stripe"> <thead><tr>'+
                   '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th> <th>Pathway Map</th>' +
                   '</tr></thead><tbody>';
 
       for (var i = 0; i < json.obj.result.length; i++) {
         var entry = json.obj.result[i];
-        //console.log(json.obj.result[entry]);
         html += '<tr><td>' + entry.identifier + '</td><td>' + entry.name +
                 '  <a role="button" data-toggle="collapse" href="#' + entry.identifier +
                 '" aria-expanded="false" aria-controls="' + entry.identifier + '" id="b' + entry.identifier + '">' +
                 '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><br>\n' +
                 '<div id="' + entry.identifier + '" class="pinfo collapse">Loading...</div></div></td>' +
                 '<td><button type="button" class="btn btn-default btn-xs" '+ 'data-toggle="modal" data-target="#exampleModal" '+
-                'data-id="' + entry.identifier + '" data-name="' + entry.name + '" data-org="' + entry.organism + '">Show</button></td></tr>\n';
+                'data-id="' + entry.identifier + '" data-name="' + entry.name + '">Show</button></td></tr>\n';
       }
       html += '</tbody></table>';
       $('.data', appContext).html(html);
@@ -90,13 +121,14 @@
               var id = $(this).attr('id');
               id = id.substring(0, id.length - 5);
               var data2 = $(this);
-              console.log(id);
+
               var showGenes = function(json) {
 
                 var html2 = '<dl class="dl-horizontal">';
                 var results = json.obj.result;
                 for (var i = 0; i < results.length; i++) {
-                  html2 += '<dt>' + results[i].locus + '</dt><dd>' + results[i].gene + '</dd>\n';
+                  html2 += '<dt><a href="http://www.kegg.jp/dbget-bin/www_bget?' + organism + ':' + results[i].locus +
+                           '" target="blank">' + results[i].locus +  '</a></dt><dd>' + results[i].gene + '</dd>\n';
                 }
                 data2.html(html2+'</dl>');
               };
@@ -117,8 +149,10 @@
 
 
             });
-            $('.genes').on('hide.bs.collapse', function() {
+            $('.genes').on('hide.bs.collapse', function(e) {
+              e.stopPropagation();
               var id = $(this).attr('id');
+              id = id.substring(0, id.length - 5);
               $('#g'+id).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
             });
 
@@ -149,6 +183,7 @@
       });
       $('.pinfo').on('hide.bs.collapse', function() {
         var id = $(this).attr('id');
+
         $('#b'+id).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
       });
 
@@ -160,11 +195,13 @@
       e.preventDefault();
       $('.data', appContext).html('Reloading...');
 
+      input = this.taxonId.value;
+
       var query = {
-        'taxon_id': this.taxonId.value,
+        'taxon_id': input,
       };
 
-      if (this.taxonId.value === '') {
+      if (input === '') {
         query = {};
       }
 
@@ -174,9 +211,22 @@
                 {'namespace': 'bliu-dev',
       	   'service': 'kegg_pathways_v0.3',
       	   'queryParams': query},
-      	  showSearchResult1,
+      	  getOrgCode,
       	  showSearchError
             );
+    });
+
+    $('#taxonId').on('input', function() {
+      var val = $('#taxonId').val();
+      var regex = /^[0-9]+$/;
+      if (regex.test(val) || val === '') {
+        $('form[name=taxon_form]').removeClass('has-error');
+        $('#submit').removeAttr('disabled');
+      } else {
+        $('form[name=taxon_form]').addClass('has-error');
+        $('#submit').attr('disabled', 'disabled');
+      }
+
     });
 
     $('#reset').on('click', function() {
@@ -184,6 +234,8 @@
         $('.gene_results').empty();
         $('.error').empty();
         $('.data', appContext).html('Reloading...');
+        $('form[name=taxon_form]').removeClass('has-error');
+        $('#submit').removeAttr('disabled');
         Agave.api.adama.search(
                   {'namespace': 'bliu-dev',
         	   'service': 'kegg_pathways_v0.3',
