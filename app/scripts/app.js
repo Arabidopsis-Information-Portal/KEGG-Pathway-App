@@ -128,7 +128,7 @@
                 var results = json.obj.result;
                 for (var i = 0; i < results.length; i++) {
                   html2 += '<dt><a href="http://www.kegg.jp/dbget-bin/www_bget?' + organism + ':' + results[i].locus +
-                           '" target="blank">' + results[i].locus +  '</a></dt><dd>' + results[i].gene + '</dd>\n';
+                           '" target="_blank">' + results[i].locus +  '</a></dt><dd>' + results[i].gene + '</dd>\n';
                 }
                 data2.html(html2+'</dl>');
               };
