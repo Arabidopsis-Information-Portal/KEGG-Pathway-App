@@ -1,16 +1,30 @@
-<div class="science-app" data-app-name="testapp">
+<div class="science-app" data-app-name="KEGG-Pathway-App">
   <h2>KEGG Pathway Table</h2>
-  <form name="taxon_form" class="form-inline">
-    <div class="form-group">
-      <label for="exampleInputName2">Taxon ID:</label>
-      <input type="text" class="form-control" id="taxonId" placeholder="NCBI Taxon ID">
-    </div>
-     <button type="submit" class="btn btn-primary" id=submit>Submit</button>
-     <button type="button" class="btn btn-default" id="reset">Reset</button>
-  </form>
-  <br/>
-  <div class="data">Loading...</div>
 
+  <div id="error"></div>
+
+  <ul id="tabs" class="nav nav-tabs" role="tablist">
+    <li role="presentation"><a href="#about" aria-controls="about" role="tab" data-toggle="tab">About</a></li>
+    <li role="presentation" class="active"><a href="#pathway-table" aria-controls="pathway-table" role="tab" data-toggle="tab">Pathway Table</a></li>
+  </ul>
+<br>
+  <div class="tab-content">
+    <div role="tabpanel" class="tab-pane fade" id="about">
+      This app displays the pathways in KEGG.
+    </div>
+    <div role="tabpanel" class="tab-pane fade in active" id="pathway-table">
+      <form name="taxon_form" class="form-inline">
+        <div class="form-group">
+          <label for="exampleInputName2">Taxon ID:</label>
+          <input type="text" class="form-control" id="taxonId" placeholder="NCBI Taxon ID">
+        </div>
+        <button type="submit" class="btn btn-primary" id=submit>Submit</button>
+        <button type="button" class="btn btn-default" id="reset" data-toggle="tooltip" data-placement="right" title="Resets to display KEGG reference pathways ">Reset</button>
+      </form>
+      <br/>
+      <div class="data">Loading...</div>
+    </div>
+  </div>
 
 
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">

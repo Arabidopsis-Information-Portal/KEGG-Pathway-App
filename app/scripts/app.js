@@ -1,23 +1,26 @@
 (function(window, $, undefined) {
   'use strict';
 
-  var appContext = $('[data-app-name="testapp"]');
+  var appContext = $('[data-app-name="KEGG-Pathway-App"]');
 
   // This displays an error when Adama fails
   var showSearchError = function(json) {
     // Displays the error on the Javascript console
     console.error('Search returned error! Status=' + json.obj.status + ' Message=' + json.obj.message);
-    // Displays the json received
-    console.log(json);
     // Creates an error alert on the page
     var html = '<div class="alert alert-danger" role="alert">' + json.obj.message + '</div>';
-    $('.data', appContext).html(html);
+    $('#error', appContext).html(html);
   };
+
+  // Activates the tooltip (popup) for the reset button.
+  $('[data-toggle="tooltip"]').tooltip();
+
 
   // The organism code of the taxon ID given
   var organism = null;
+  var organismName = 'KEGG Reference Pathways';
   // The taxon ID given
-  var input = null;
+  var input = '';
 
   // This is called whenever the modal (popup with pathway map) is called to be shown
   $('#exampleModal', appContext).on('show.bs.modal', function (event) {
@@ -33,9 +36,13 @@
     }
     // Sets the variable modal to this, which is the modal
     var modal = $(this);
-    // Sets teh title of the modal
-    modal.find('.modal-title').text('Pathway Map of ' + name);
-    // Puts the picture and link in the boddy of the modal
+    // Sets the title of the modal
+    if (organismName === 'KEGG Reference Pathways'){
+      modal.find('.modal-title').text('Reference Pathway Map of ' + name );
+    } else {
+      modal.find('.modal-title').text('Pathway Map of ' + name + ' in ' + organismName);
+    }
+    // Puts the picture and link in the body of the modal
     modal.find('.modal-body').html('<img src="http://rest.kegg.jp/get/' + org + id + '/image"><br/>' +
                   '<a href="http://www.kegg.jp/kegg-bin/highlight_pathway?map=' + org + id  +'" target="_blank">Image at KEGG</a>');
   });
@@ -52,6 +59,7 @@
       // If the taxon ID field is empty, just diplay the results normally.
       if (input === '') {
         organism = null;
+        organismName = 'KEGG Reference Pathways';
         showSearchResult1(json);
 
       } else { // If the taxon ID field contins something
@@ -66,6 +74,7 @@
           var index = org.indexOf('[');
           // sets the organism code into organism so it can be used later
           organism = org.substring(index+4, index+7);
+          organismName = 'Pathways in ' + org.substring(0, index-1);
           // displays the results
           showSearchResult1(json);
 
@@ -98,7 +107,7 @@
       // Creates a string of html to place into the document
       // This starts off the html for the table, with headers and classes that will
       // work with Datatables
-      var html = '<table class="table hover row-border stripe"> <thead><tr>'+
+      var html = '<h3>' + organismName + '</h3><table class="table hover row-border stripe"> <thead><tr>'+
                   '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th> <th>Pathway Map</th>' +
                   '</tr></thead><tbody>';
 
@@ -144,14 +153,14 @@
           // Gets all the fields of the object that has the pathwya info
           var fields = Object.keys(results);
           // This is the order that the fields should be displayed in for the table
-          var order = ['name', 'description', 'class', 'organism', 'ko_pathway'];
+          var order = ['description', 'class', 'organism'];
           // Creates html to put in the expandable container. This starts a description list
-          var html = '<dl>';
+          var html = '<br><ul class="list-unstyled">';
           // Loops through all elements in the order array and gets that field in the object (if it exists)
           for (var i = 0; i < order.length; i++) {
             if (fields.indexOf(order[i]) !== -1) {
               // Adds html to display the info for the current field
-              html += '<dt>' + order[i] + '</dt><dd>' + results[order[i]] + '</dd>\n';
+              html += '<li><b>' + order[i] + '</b>: ' + results[order[i]] + '</li>\n';
             }
           }
           // If organism is a field (the pathway is organism specific), add an entry of the list
@@ -159,13 +168,13 @@
           if (fields.indexOf('organism') !== -1) {
             // Displays Genes and a button with a unique id g + identifier (e.g. "g00010")
             // This button controls another expandable field.
-            html += '<dt>genes <a role="button" data-toggle="collapse" href="#' + id +
+            html += '<li><b>genes </b><a role="button" data-toggle="collapse" href="#' + id +
             '-gene" aria-expanded="false" aria-controls="' + id + '-gene" id="g' + id + '">' +
-            '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><dt>\n' +
+            '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a></li>\n' +
             // The div holds the expandable field with unique id  identifier + -genes (e.g. "00010-genes")
-            '<dd><div id="' + id + '-gene" class="genes collapse">Loading...</div></dd>';
+            '<li><div id="' + id + '-gene" class="genes collapse">Loading...</div></li>';
             //Ends the list
-            html += '</dl>';
+            html += '</ul>';
             // Puts the html in the document
             data.html(html);
 
@@ -197,7 +206,7 @@
               };
 
               // Creates a list of parameters to query Adama with
-              query = {'pathway_id':id, 'taxon_id': $('#taxonId', appContext).val()};
+              query = {'pathway_id':id, 'taxon_id': input};
 
               // Calls Adama if the genes have not been loaded before.
               if ($(this).html() === 'Loading...') {
@@ -245,10 +254,10 @@
 
         // Creates the parameters to query Adama with.
         var query;
-        if ($('#taxonId', appContext).val() === '') {
+        if (input === '') {
           query = {'pathway_id':id};
         } else {
-          query = {'pathway_id':id, 'taxon_id': $('#taxonId').val()};
+          query = {'pathway_id':id, 'taxon_id': input};
         }
 
         // Calls Adama for the pathway info
@@ -285,6 +294,9 @@
 
       // Sets the document to display Reloading
       $('.data', appContext).html('Reloading...');
+
+      // Removes the error message if it exists
+      $('#error', appContext).empty();
 
       // Gets the input and saves it
       input = this.taxonId.value;
@@ -341,8 +353,13 @@
         $('form[name=taxon_form]', appContext).removeClass('has-error');
         //Enable submit button again
         $('#submit', appContext).removeAttr('disabled');
-        // Calls adama with no parameters
+        // Removes the error message if it exists
+        $('#error', appContext).empty();
+        // resets the organism and input variables
         organism = null;
+        input = '';
+        organismName = 'KEGG Reference Pathways';
+        // Calls Adama with no parameters
         Agave.api.adama.search(
                   {'namespace': 'bliu-dev',
         	   'service': 'kegg_pathways_v0.3',
