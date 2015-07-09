@@ -20,7 +20,7 @@
   var input = null;
 
   // This is called whenever the modal (popup with pathway map) is called to be shown
-  $('#exampleModal').on('show.bs.modal', function (event) {
+  $('#exampleModal', appContext).on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget); // Button that triggered the modal
     // gets the fields from the button that called it (from data-* attributes)
     var id = button.data('id');
@@ -130,7 +130,7 @@
       $('.data', appContext).html(html);
 
       // This is called whenever the additional info for a pathway is called to expand
-      $('.pinfo').on('show.bs.collapse', function() {
+      $('.pinfo', appContext).on('show.bs.collapse', function() {
 
         // Gets the id of the area being expanded (which is the same as the pathway_id)
         var id = $(this).attr('id');
@@ -171,7 +171,7 @@
 
             // This function is called when the field holding the list of genes is called to expand
             // Note this must be after the html is updated in the document
-            $('.genes').on('show.bs.collapse', function() {
+            $('.genes', appContext).on('show.bs.collapse', function() {
               // Gets the id of the area being expanded and removes the -genes at the end
               var id = $(this).attr('id');
               id = id.substring(0, id.length - 5);
@@ -197,7 +197,7 @@
               };
 
               // Creates a list of parameters to query Adama with
-              query = {'pathway_id':id, 'taxon_id': $('#taxonId').val()};
+              query = {'pathway_id':id, 'taxon_id': $('#taxonId', appContext).val()};
 
               // Calls Adama if the genes have not been loaded before.
               if ($(this).html() === 'Loading...') {
@@ -211,13 +211,13 @@
               }
 
               // Changes the icon for the gene list button from expand to collapse
-              $('#g' + id).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
+              $('#g' + id, appContext).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
 
 
             });
 
             // Called then the area with the gene list is called to collapse
-            $('.genes').on('hide.bs.collapse', function(e) {
+            $('.genes', appContext).on('hide.bs.collapse', function(e) {
               // Stops the collapse form propagating. The pathway info is also an expandable area, and will also
               // trigger from the inside expansion unless the event is stopped from propagating.
               e.stopPropagation();
@@ -225,7 +225,7 @@
               var id = $(this).attr('id');
               id = id.substring(0, id.length - 5);
               // Changed the button from collapse to expand
-              $('#g'+id).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
+              $('#g'+id, appContext).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
             });
 
           } else { // Remember, all that was only if there was an organism given
@@ -245,14 +245,14 @@
 
         // Creates the parameters to query Adama with.
         var query;
-        if ($('#taxonId').val() === '') {
+        if ($('#taxonId', appContext).val() === '') {
           query = {'pathway_id':id};
         } else {
           query = {'pathway_id':id, 'taxon_id': $('#taxonId').val()};
         }
 
         // Calls Adama for the pathway info
-        if ($(this).html() === 'Loading...') {
+        if ($(this, appContext).html() === 'Loading...') {
           Agave.api.adama.search(
                     {'namespace': 'bliu-dev',
                'service': 'kegg_pathways_v0.3',
@@ -262,15 +262,15 @@
                 );
         }
         // Sets the button that show pathway info from expand to collapse
-        $('#b' + id).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
+        $('#b' + id, appContext).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
       });
 
       // This is called when the area holding pathway info is called to collapse
-      $('.pinfo').on('hide.bs.collapse', function() {
+      $('.pinfo', appContext).on('hide.bs.collapse', function() {
         // Gets the id of the area
         var id = $(this).attr('id');
         // Sets the button that show pathway info from collapse to expand
-        $('#b'+id).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
+        $('#b'+id, appContext).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
       });
 
       // Calls Datatables to go through the document and create the table form the html
@@ -279,7 +279,7 @@
     };
 
     // This function is called when the taxon form is submitted
-    $('form[name=taxon_form]').on('submit', function(e) {
+    $('form[name=taxon_form]', appContext).on('submit', function(e) {
       // Prevents the button from default trying to POST
       e.preventDefault();
 
@@ -310,38 +310,39 @@
     });
 
     // Runs when the input in the taxon text box is changed
-    $('#taxonId').on('input', function() {
+    $('#taxonId', appContext).on('input', function() {
       // Gets the value in the textbox
-      var val = $('#taxonId').val();
+      var val = $('#taxonId', appContext).val();
       // Creates a regular expression to check the validity of the text
       // This checks that the input is only numbers
       var regex = /^[0-9]+$/;
       // If the it is valid, or the field is empty
       if (regex.test(val) || val === '') {
         // Set the textbox as having no error
-        $('form[name=taxon_form]').removeClass('has-error');
+        $('form[name=taxon_form]', appContext).removeClass('has-error');
         // Enable the submit button
-        $('#submit').removeAttr('disabled');
+        $('#submit', appContext).removeAttr('disabled');
       } else { // input is invalid
         // Change the textbox appearance to having an error (red)
-        $('form[name=taxon_form]').addClass('has-error');
+        $('form[name=taxon_form]', appContext).addClass('has-error');
         // Disable the submit button
-        $('#submit').attr('disabled', 'disabled');
+        $('#submit', appContext).attr('disabled', 'disabled');
       }
 
     });
 
     // When the reset button is called
-    $('#reset').on('click', function() {
+    $('#reset', appContext).on('click', function() {
         // Clear the taxon text box
-        $('#taxonId').val('');
+        $('#taxonId', appContext).val('');
         // Change the text to reloading
         $('.data', appContext).html('Reloading...');
         // Set the textbox as having no errors
-        $('form[name=taxon_form]').removeClass('has-error');
+        $('form[name=taxon_form]', appContext).removeClass('has-error');
         //Enable submit button again
-        $('#submit').removeAttr('disabled');
+        $('#submit', appContext).removeAttr('disabled');
         // Calls adama with no parameters
+        organism = null;
         Agave.api.adama.search(
                   {'namespace': 'bliu-dev',
         	   'service': 'kegg_pathways_v0.3',
