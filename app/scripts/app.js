@@ -107,7 +107,7 @@
       // Creates a string of html to place into the document
       // This starts off the html for the table, with headers and classes that will
       // work with Datatables
-      var html = '<h3>' + organismName + '</h3><table class="table hover row-border stripe"> <thead><tr>'+
+      var html = '<h3>' + organismName + '</h3><table class="table hover row-border stripe" width="100%"> <thead><tr>'+
                   '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th> <th>Pathway Map</th>' +
                   '</tr></thead><tbody>';
 
@@ -284,8 +284,21 @@
 
       // Calls Datatables to go through the document and create the table form the html
       // Sets the last column (show pahtway buttons) to not orderable
-      $('.data table', appContext).DataTable({'columnDefs': [ { 'targets': 2, 'orderable': false } ]});
+      $('.data table', appContext).DataTable({'columnDefs': [ { 'targets': 2, 'orderable': false }]});
     };
+
+    var showGeneList = function(json){
+      var list = json.obj.result;
+      var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
+                  '<th>Gene Locus</th> <th>Gene Name</th></tr></thead><tbody>\n';
+      for (var i = 0; i < list.length; i++) {
+        html+='<tr><td>' + list[i].locus + '</td><td>'+ list[i].gene + '</td></tr>\n';
+
+      }
+      $('#genes', appContext).html(html+ '</tbody></table>');
+      $('#genes table', appContext).DataTable();
+    };
+
 
     // This function is called when the taxon form is submitted
     $('form[name=taxon_form]', appContext).on('submit', function(e) {
@@ -321,26 +334,27 @@
             );
     });
 
+
+
     // Runs when the input in the taxon text box is changed
-    $('#taxonId', appContext).on('input', function() {
+    $('input', appContext).on('input', function() {
       // Gets the value in the textbox
-      var val = $('#taxonId', appContext).val();
+      var val = $(this).val();
       // Creates a regular expression to check the validity of the text
       // This checks that the input is only numbers
       var regex = /^[0-9]+$/;
       // If the it is valid, or the field is empty
       if (regex.test(val) || val === '') {
         // Set the textbox as having no error
-        $('form[name=taxon_form]', appContext).removeClass('has-error');
+        $(this, appContext).parent().removeClass('has-error');
         // Enable the submit button
         $('#submit', appContext).removeAttr('disabled');
       } else { // input is invalid
         // Change the textbox appearance to having an error (red)
-        $('form[name=taxon_form]', appContext).addClass('has-error');
+        $(this, appContext).parent().addClass('has-error');
         // Disable the submit button
         $('#submit', appContext).attr('disabled', 'disabled');
       }
-
     });
 
     // When the reset button is called
@@ -368,6 +382,40 @@
         	  showSearchError
               );
     });
+
+
+    // Called when info is submitted on gene list form
+    $('form[name=gene-form]', appContext).on('submit', function(e) {
+      // Prevents the button from default trying to POST
+      e.preventDefault();
+
+      // Sets the document to display Reloading
+      $('#genes', appContext).html('Loading...');
+
+      // Removes the error message if it exists
+      $('#error', appContext).empty();
+
+      // Gets the input and saves it
+      var taxon = this.geneTaxonId.value;
+      var pathway = this.pathwayId.value;
+      // Creates parameters to call Adama with
+      var query = {
+        'taxon_id': taxon,
+        'pathway_id':pathway
+      };
+
+
+      // Calls Adama
+      Agave.api.adama.search(
+                {'namespace': 'bliu-dev',
+           'service': 'genes_by_kegg_pathway_v0.1',
+           'queryParams': query},
+          showGeneList,
+          showSearchError
+            );
+    });
+
+
 
     // Calls Adama
     Agave.api.adama.search(
