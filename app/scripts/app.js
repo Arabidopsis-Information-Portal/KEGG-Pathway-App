@@ -157,11 +157,16 @@
           // Creates html to put in the expandable container. This starts a description list
           var html = '<br><ul class="list-unstyled">';
           // Loops through all elements in the order array and gets that field in the object (if it exists)
+          var flag = false;
           for (var i = 0; i < order.length; i++) {
             if (fields.indexOf(order[i]) !== -1) {
               // Adds html to display the info for the current field
               html += '<li><b>' + order[i] + '</b>: ' + results[order[i]] + '</li>\n';
+              flag = true;
             }
+          }
+          if (flag===false) {
+            html += '<li>No information</li>';
           }
           // If organism is a field (the pathway is organism specific), add an entry of the list
           // that would allow the user to display the list of genes
@@ -337,7 +342,7 @@
 
 
     // Runs when the input in the taxon text box is changed
-    $('input', appContext).on('input', function() {
+    $('#taxonId', appContext).on('input', function() {
       // Gets the value in the textbox
       var val = $(this).val();
       // Creates a regular expression to check the validity of the text
@@ -346,12 +351,12 @@
       // If the it is valid, or the field is empty
       if (regex.test(val) || val === '') {
         // Set the textbox as having no error
-        $(this, appContext).parent().removeClass('has-error');
+        $('form[name=taxon_form]', appContext).removeClass('has-error');
         // Enable the submit button
         $('#submit', appContext).removeAttr('disabled');
       } else { // input is invalid
         // Change the textbox appearance to having an error (red)
-        $(this, appContext).parent().addClass('has-error');
+        $('form[name=taxon_form]', appContext).addClass('has-error');
         // Disable the submit button
         $('#submit', appContext).attr('disabled', 'disabled');
       }
@@ -389,33 +394,46 @@
       // Prevents the button from default trying to POST
       e.preventDefault();
 
-      // Sets the document to display Reloading
-      $('#genes', appContext).html('Loading...');
-
-      // Removes the error message if it exists
-      $('#error', appContext).empty();
-
-      // Gets the input and saves it
+      // Gets the input values
       var taxon = this.geneTaxonId.value;
       var pathway = this.pathwayId.value;
-      // Creates parameters to call Adama with
-      var query = {
-        'taxon_id': taxon,
-        'pathway_id':pathway
-      };
+
+      if (taxon === '' || pathway === '') {
+          $(this, appContext).addClass('has-error');
 
 
-      // Calls Adama
-      Agave.api.adama.search(
+      } else {
+        // Sets the document to display Reloading
+        $('#genes', appContext).html('Loading...');
+
+        // Removes the error message if it exists
+        $('#error', appContext).empty();
+
+
+        // Creates parameters to call Adama with
+        var query = {
+          'taxon_id': taxon,
+          'pathway_id':pathway
+        };
+
+
+        // Calls Adama
+        Agave.api.adama.search(
                 {'namespace': 'bliu-dev',
-           'service': 'genes_by_kegg_pathway_v0.1',
-           'queryParams': query},
+                'service': 'genes_by_kegg_pathway_v0.1',
+                'queryParams': query},
           showGeneList,
           showSearchError
             );
+      }
     });
 
 
+    // Runs when the input ion the genes page is changed
+    $('form[name=gene-form] input', appContext).on('input', function() {
+      // Remove the error for the form
+      $('form[name=gene-form]', appContext).removeClass('has-error');
+    });
 
     // Calls Adama
     Agave.api.adama.search(
