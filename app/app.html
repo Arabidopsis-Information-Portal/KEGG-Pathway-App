@@ -27,9 +27,10 @@
     <div role="tabpanel" class="tab-pane fade in active" id="pathway-table">
       <form name="taxon_form" class="form-inline">
         <div class="form-group">
-          <label for="taxonId">NCBI Taxon ID:</label>
-          <input type="text" class="form-control" id="taxonId" placeholder="(e.g. 3072)">
+          <label for="taxonId">NCBI Taxon ID (e.g. 3702)</label>
+          <input type="text" class="form-control" id="taxonId" placeholder="">
         </div>
+
         <button type="submit" class="btn btn-primary" id=submit>Submit</button>
         <button type="button" class="btn btn-default" id="reset" data-toggle="tooltip" data-placement="right" title="Resets to display KEGG reference pathways ">Reset</button>
       </form>
@@ -39,10 +40,13 @@
     <div role="tabpanel" class="tab-pane fade" id="gene-table">
       <form name="gene-form" class="form-inline">
         <div class="form-group">
-          <label for="gene-taxonId">NCBI Taxon ID:</label>
-          <input type="text" class="form-control" id="geneTaxonId" placeholder="(e.g. 3072)">
-          <label for="exampleInputName2"> &nbsp;&nbsp;&nbsp;&nbsp;KEGG Pathway ID:</label>
-          <input type="text" class="form-control" id="pathwayId" placeholder="(e.g. 00010)">
+          <label for="gene-taxonId">NCBI Taxon ID (e.g. 3702)</label>
+          <input type="text" class="form-control" id="geneTaxonId" placeholder="">
+	</div>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+	<div class ="form-group">
+          <label for="exampleInputName2"> KEGG Pathway ID (e.g.00010)</label>
+          <input type="text" class="form-control" id="pathwayId" placeholder="">
         </div>
         <button type="submit" class="btn btn-primary" id=submit>Submit</button>
       </form>
