@@ -20,7 +20,7 @@
   var organism = null;
   var organismName = 'KEGG Reference Pathways';
   // The taxon ID given
-  var input = '';
+  var input = '3702';
 
   // This is called whenever the modal (popup with pathway map) is called to be shown
   $('#exampleModal', appContext).on('show.bs.modal', function (event) {
@@ -341,9 +341,40 @@
 
 
 
+    $('#specific', appContext).change(function() {
+      if ($(this).is(':checked')) {
+        $('#taxon_textbox').collapse('hide');
+        input = '3702';
+        $('.data', appContext).html('Reloading...');
+        Agave.api.adama.search(
+                  {'namespace': 'bliu-dev',
+             'service': 'kegg_pathways_v0.3',
+             'queryParams': {}},
+            getOrgCode,
+            showSearchError
+              );
+      } else {
+        $('#taxon_textbox', appContext).collapse('show');
+        $('#taxonId', appContext).val('');
+        input = '';
+        organismName = 'KEGG Reference Pathways';
+        $('.data', appContext).html('Reloading...');
+        Agave.api.adama.search(
+                  {'namespace': 'bliu-dev',
+        	   'service': 'kegg_pathways_v0.3',
+        	   'queryParams': {}},
+        	  showSearchResult1,
+        	  showSearchError
+              );
+      }
+
+
+    });
+
     // Runs when the input in the taxon text box is changed
     $('#taxonId', appContext).on('input', function() {
       // Gets the value in the textbox
+
       var val = $(this).val();
       // Creates a regular expression to check the validity of the text
       // This checks that the input is only numbers
@@ -439,8 +470,8 @@
     Agave.api.adama.search(
               {'namespace': 'bliu-dev',
     	   'service': 'kegg_pathways_v0.3',
-    	   'queryParams': {}},
-    	  showSearchResult1,
+    	   'queryParams': {'taxon_id':input}},
+    	  getOrgCode,
     	  showSearchError
           );
 

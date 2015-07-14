@@ -26,13 +26,18 @@
     </div>
     <div role="tabpanel" class="tab-pane fade in active" id="pathway-table">
       <form name="taxon_form" class="form-inline">
-        <div class="form-group">
-          <label for="taxonId">NCBI Taxon ID (e.g. 3702)</label>
-          <input type="text" class="form-control" id="taxonId" placeholder="">
-        </div>
+        <input type="checkbox" id="specific" checked> Show only Arabidopsis pathways
+        <br>
+        <div class="collapse" id="taxon_textbox">
+          <br>
+          <div class="form-group">
+            <label for="taxonId">NCBI Taxon ID (e.g. 3702)</label>
+            <input type="text" class="form-control" id="taxonId" placeholder="">
+          </div>
 
-        <button type="submit" class="btn btn-primary" id=submit>Submit</button>
-        <button type="button" class="btn btn-default" id="reset" data-toggle="tooltip" data-placement="right" title="Resets to display KEGG reference pathways ">Reset</button>
+          <button type="submit" class="btn btn-primary" id=submit>Submit</button>
+          <button type="button" class="btn btn-default" id="reset" data-toggle="tooltip" data-placement="right" title="Resets to display KEGG reference pathways ">Reset</button>
+        </div>
       </form>
       <br/>
       <div class="data">Loading...</div>
