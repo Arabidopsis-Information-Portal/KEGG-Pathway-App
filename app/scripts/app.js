@@ -303,7 +303,7 @@
         Agave.api.adama.search(
                   {'namespace': 'bliu-dev',
              'service': 'kegg_pathways_v0.3',
-             'queryParams': {}},
+             'queryParams': {'taxon_id':'3702'}},
             getOrgCode,
             showSearchError
               );
