@@ -8,12 +8,13 @@
     // Displays the error on the Javascript console
     console.error('Search returned error! Status=' + json.obj.status + ' Message=' + json.obj.message);
     // Creates an error alert on the page
+    console.log(json);
     var html = '<div class="alert alert-danger" role="alert">' + json.obj.message + '</div>';
     $('#error', appContext).html(html);
   };
 
   // Activates the tooltip (popup) for the reset button.
-  $('[data-toggle="tooltip"]').tooltip();
+  $('[data-toggle="tooltip"]', appContext).tooltip();
 
 
   // The organism code of the taxon ID given
@@ -173,79 +174,28 @@
           if (fields.indexOf('organism') !== -1) {
             // Displays Genes and a button with a unique id g + identifier (e.g. "g00010")
             // This button controls another expandable field.
-            html += '<li><b>genes </b><a role="button" data-toggle="collapse" href="#' + id +
-            '-gene" aria-expanded="false" aria-controls="' + id + '-gene" id="g' + id + '">' +
-            '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a></li>\n' +
-            // The div holds the expandable field with unique id  identifier + -genes (e.g. "00010-genes")
-            '<li><div id="' + id + '-gene" class="genes collapse">Loading...</div></li>';
+            html += '<li><b><button href="#" class="btn btn-default btn-xs genelink" id="'+ id + '-link">Show genes </b></li>\n';
+
             //Ends the list
             html += '</ul>';
             // Puts the html in the document
             data.html(html);
 
-            // This function is called when the field holding the list of genes is called to expand
-            // Note this must be after the html is updated in the document
-            $('.genes', appContext).on('show.bs.collapse', function() {
-              // Gets the id of the area being expanded and removes the -genes at the end
+            $('.genelink', appContext).click(function(){
               var id = $(this).attr('id');
               id = id.substring(0, id.length - 5);
-
-              // Sets data2 as the current object so it can be used later
-              var data2 = $(this);
-
-              // Creates a new function that will be called when Adama returns with the list of genes in the pathway
-              var showGenes = function(json) {
-                // Creates a new description list that contains the genes and gene names
-                var html2 = '<dl class="dl-horizontal">';
-                // Gets the array of results
-                var results = json.obj.result;
-                // Loops through all the results
-                for (var i = 0; i < results.length; i++) {
-                  // Adds html to show gene locus as term and gene name as description of term.
-                  // The gene locus is linked to the information at KEGG
-                  html2 += '<dt><a href="http://www.kegg.jp/dbget-bin/www_bget?' + organism + ':' + results[i].locus +
-                           '" target="_blank">' + results[i].locus +  '</a></dt><dd>' + results[i].gene + '</dd>\n';
-                }
-                // Finishes the html and updates the document
-                data2.html(html2+'</dl>');
-              };
-
-              // Creates a list of parameters to query Adama with
-              query = {'pathway_id':id, 'taxon_id': input};
-
-              // Calls Adama if the genes have not been loaded before.
-              if ($(this).html() === 'Loading...') {
-                Agave.api.adama.search(
-                          {'namespace': 'bliu-dev',
-                     'service': 'genes_by_kegg_pathway_v0.1',
-                     'queryParams': query},
-                    showGenes,
-                    showSearchError
-                      );
-              }
-
-              // Changes the icon for the gene list button from expand to collapse
-              $('#g' + id, appContext).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
-
+              console.log(id);
+              $('#geneTaxonId', appContext).val(input);
+              $('#pathwayId', appContext).val(id);
+              $('#genetab', appContext).tab('show');
+              $('form[name=gene-form]', appContext).submit();
 
             });
 
-            // Called then the area with the gene list is called to collapse
-            $('.genes', appContext).on('hide.bs.collapse', function(e) {
-              // Stops the collapse form propagating. The pathway info is also an expandable area, and will also
-              // trigger from the inside expansion unless the event is stopped from propagating.
-              e.stopPropagation();
-              // Gets the id of the area expanded, removeing -genes at the end
-              var id = $(this).attr('id');
-              id = id.substring(0, id.length - 5);
-              // Changed the button from collapse to expand
-              $('#g'+id, appContext).html('<span class="glyphicon glyphicon-collapse-down" aria-hidden="true">');
-            });
 
-          } else { // Remember, all that was only if there was an organism given
-            // If no organism is given, does not add genes, and teh required code for
-            // displaying the list of genes, and ends the list of fields in the pathway info
-            // and updates the document
+
+          } else { // Not an organism specific pathway
+
             html += '</dl>';
 
             data.html(html);
@@ -295,14 +245,18 @@
     var showGeneList = function(json){
       var list = json.obj.result;
       var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
-                  '<th>Gene Locus</th> <th>Gene Name</th></tr></thead><tbody>\n';
+                  '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
       for (var i = 0; i < list.length; i++) {
-        html+='<tr><td>' + list[i].locus + '</td><td>'+ list[i].gene + '</td></tr>\n';
+        html+='<tr><td>' + list[i].locus_id + '</td><td>'+ list[i].name +
+          '</td><td>'+ list[i].ec_number + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
       $('#genes', appContext).html(html+ '</tbody></table>');
       $('#genes table', appContext).DataTable();
     };
+
+
+
 
 
     // This function is called when the taxon form is submitted
@@ -343,7 +297,7 @@
 
     $('#specific', appContext).change(function() {
       if ($(this).is(':checked')) {
-        $('#taxon_textbox').collapse('hide');
+        $('#taxon_textbox', appContext).collapse('hide');
         input = '3702';
         $('.data', appContext).html('Reloading...');
         Agave.api.adama.search(
@@ -430,7 +384,7 @@
       var pathway = this.pathwayId.value;
 
       if (taxon === '' || pathway === '') {
-          $(this, appContext).addClass('has-error');
+          $(this).addClass('has-error');
 
 
       } else {
@@ -451,7 +405,7 @@
         // Calls Adama
         Agave.api.adama.search(
                 {'namespace': 'bliu-dev',
-                'service': 'genes_by_kegg_pathway_v0.1',
+                'service': 'genes_by_kegg_pathway_v0.2',
                 'queryParams': query},
           showGeneList,
           showSearchError
