@@ -88,7 +88,7 @@
 
         // Calls adama using the parameters above
         Agave.api.adama.search(
-                {'namespace': 'bliu-dev',
+                {'namespace': 'kegg',
                 'service': 'kegg_pathways_v0.3',
                 'queryParams': query},
                 showOrgPathways,
@@ -221,7 +221,7 @@
         // Calls Adama for the pathway info
         if ($(this, appContext).html() === 'Loading...') {
           Agave.api.adama.search(
-                    {'namespace': 'bliu-dev',
+                    {'namespace': 'kegg',
                'service': 'kegg_pathways_v0.3',
                'queryParams': query},
               showPathwayInfo, //Calls showPathwayInfo with the results if call is successful
@@ -289,7 +289,7 @@
 
       // Calls Adama
       Agave.api.adama.search(
-                {'namespace': 'bliu-dev',
+                {'namespace': 'kegg',
       	   'service': 'kegg_pathways_v0.3',
       	   'queryParams': query},
       	  getOrgCode,
@@ -305,7 +305,7 @@
         input = '3702';
         $('.data', appContext).html('Reloading...');
         Agave.api.adama.search(
-                  {'namespace': 'bliu-dev',
+                  {'namespace': 'kegg',
              'service': 'kegg_pathways_v0.3',
              'queryParams': {'taxon_id':'3702'}},
             getOrgCode,
@@ -318,7 +318,7 @@
         organismName = 'KEGG Reference Pathways';
         $('.data', appContext).html('Reloading...');
         Agave.api.adama.search(
-                  {'namespace': 'bliu-dev',
+                  {'namespace': 'kegg',
         	   'service': 'kegg_pathways_v0.3',
         	   'queryParams': {}},
         	  showSearchResult1,
@@ -369,7 +369,7 @@
         organismName = 'KEGG Reference Pathways';
         // Calls Adama with no parameters
         Agave.api.adama.search(
-                  {'namespace': 'bliu-dev',
+                  {'namespace': 'kegg',
         	   'service': 'kegg_pathways_v0.3',
         	   'queryParams': {}},
         	  showSearchResult1,
@@ -408,8 +408,8 @@
 
         // Calls Adama
         Agave.api.adama.search(
-                {'namespace': 'bliu-dev',
-                'service': 'genes_by_kegg_pathway_v0.2',
+                {'namespace': 'kegg',
+                'service': 'genes_by_kegg_pathway_v0.3',
                 'queryParams': query},
           showGeneList,
           showSearchError
@@ -426,7 +426,7 @@
 
     // Calls Adama
     Agave.api.adama.search(
-              {'namespace': 'bliu-dev',
+              {'namespace': 'kegg',
     	   'service': 'kegg_pathways_v0.3',
     	   'queryParams': {'taxon_id':input}},
     	  getOrgCode,
