@@ -13,6 +13,8 @@
     $('#error', appContext).html(html);
   };
 
+
+
   // Activates the tooltip (popup) for the reset button.
   $('[data-toggle="tooltip"]', appContext).tooltip();
 
@@ -56,7 +58,7 @@
 
     // Function that is called when a taxon ID is submitted
     var getOrgCode = function(json) {
-
+      $('#error', appContext).empty();
       // If the taxon ID field is empty, just diplay the results normally.
       if (input === '') {
         organism = null;
@@ -82,7 +84,7 @@
         };
 
         // Create a list of parameters to query Adama with
-        var query = {'pathway_id':path.identifier, 'taxon_id':input};
+        var query = {'pathway_id':path.pathway_id, 'taxon_id':input};
 
         // Calls adama using the parameters above
         Agave.api.adama.search(
@@ -99,6 +101,7 @@
 
 
     var showSearchResult1 = function(json) {
+      $('#error', appContext).empty();
       // JavaScript === and !== operators test value and type.
       if (json.obj.status !== 'success') {
           console.log('Search result status is NOT good!');
@@ -118,21 +121,21 @@
         var entry = json.obj.result[i];
         // adds the html for one row in the table
         //First column is just the pathway ID
-        html += '<tr><td>' + entry.identifier + '</td>' +
+        html += '<tr><td>' + entry.pathway_id + '</td>' +
                 // Second row is the name of the pathway...
-                '<td>' + entry.name +
+                '<td>' + entry.pathway_name +
                 // and the button to expand. The button is a linked (<a>) icon (<span>)
-                // Each button is given a unique id that is in the form b + identifier (e.g. "b00010")
+                // Each button is given a unique id that is in the form b + pathway ID (e.g. "b00010")
                 // so the button can be identified and the right infromation can be retrieved later
-                '  <a role="button" data-toggle="collapse" href="#' + entry.identifier +
-                '" aria-expanded="false" aria-controls="' + entry.identifier + '" id="b' + entry.identifier + '">' +
+                '  <a role="button" data-toggle="collapse" href="#' + entry.pathway_id +
+                '" aria-expanded="false" aria-controls="' + entry.pathway_id + '" id="b' + entry.pathway_id + '">' +
                 '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><br>\n' +
-                // The div holds the area that will be expanded, and is given the id of just the identifier (e.g. "00010")
-                '<div id="' + entry.identifier + '" class="pinfo collapse">Loading...</div></div></td>' +
+                // The div holds the area that will be expanded, and is given the id of just the pathway ID (e.g. "00010")
+                '<div id="' + entry.pathway_id + '" class="pinfo collapse">Loading...</div></div></td>' +
                 // Third (last) column is a button to show the modal (popup)
                 // Data is sent through data-id and data-name attributes
                 '<td><button type="button" class="btn btn-default btn-xs" '+ 'data-toggle="modal" data-target="#exampleModal" '+
-                'data-id="' + entry.identifier + '" data-name="' + entry.name + '">Show</button></td></tr>\n';
+                'data-id="' + entry.pathway_id + '" data-name="' + entry.pathway_name + '">Show</button></td></tr>\n';
       }
       // Ends the html for the table
       html += '</tbody></table>';
@@ -172,7 +175,7 @@
           // If organism is a field (the pathway is organism specific), add an entry of the list
           // that would allow the user to display the list of genes
           if (fields.indexOf('organism') !== -1) {
-            // Displays Genes and a button with a unique id g + identifier (e.g. "g00010")
+            // Displays Genes and a button with a unique id g + pathway ID (e.g. "g00010")
             // This button controls another expandable field.
             html += '<li><b><button href="#" class="btn btn-default btn-xs genelink" id="'+ id + '-link">Show genes </b></li>\n';
 
@@ -243,11 +246,12 @@
     };
 
     var showGeneList = function(json){
+      $('#error', appContext).empty();
       var list = json.obj.result;
       var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
                   '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
       for (var i = 0; i < list.length; i++) {
-        html+='<tr><td>' + list[i].locus_id + '</td><td>'+ list[i].name +
+        html+='<tr><td>' + list[i].locus_id + '</td><td>'+ list[i].gene_name +
           '</td><td>'+ list[i].ec_number + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
