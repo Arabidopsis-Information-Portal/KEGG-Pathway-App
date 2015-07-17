@@ -24,6 +24,8 @@
   var organismName = 'KEGG Reference Pathways';
   // The taxon ID given
   var input = '3702';
+  var taxonInput;
+  var pathwayInput;
 
   // This is called whenever the modal (popup with pathway map) is called to be shown
   $('#exampleModal', appContext).on('show.bs.modal', function (event) {
@@ -43,7 +45,7 @@
     if (organismName === 'KEGG Reference Pathways'){
       modal.find('.modal-title').text('Reference Pathway Map of ' + name );
     } else {
-      modal.find('.modal-title').text('Pathway Map of ' + name + ' in ' + organismName);
+      modal.find('.modal-title').text('Pathway Map of ' + name + ' in ' + organismName.substring(11));
     }
     // Puts the picture and link in the body of the modal
     modal.find('.modal-body').html('<img src="http://rest.kegg.jp/get/' + org + id + '/image"><br/>' +
@@ -246,6 +248,7 @@
     };
 
     var showGeneList = function(json){
+
       $('#error', appContext).empty();
       var list = json.obj.result;
       var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
@@ -255,8 +258,26 @@
           '</td><td>'+ list[i].ec_number + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
-      $('#genes', appContext).html(html+ '</tbody></table>');
-      $('#genes table', appContext).DataTable();
+
+
+      function getOrganism(json) {
+        var taxonName = json.obj.result[0].taxon_name;
+        var pathwayName = json.obj.result[0].name;
+        console.log(taxonName + '  ' + pathwayName);
+
+
+        html = '<h3>' + pathwayName + ' in ' + taxonName + '</h3>' + html;
+        $('#genes', appContext).html(html+ '</tbody></table>');
+        $('#genes table', appContext).DataTable();
+      }
+
+      Agave.api.adama.search(
+                {'namespace': 'kegg',
+           'service': 'kegg_pathways_v0.3',
+           'queryParams': {'taxon_id':taxonInput, 'pathway_id':pathwayInput}},
+          getOrganism,
+          showSearchError
+            );
     };
 
 
@@ -398,7 +419,8 @@
         // Removes the error message if it exists
         $('#error', appContext).empty();
 
-
+        taxonInput = taxon;
+        pathwayInput = pathway;
         // Creates parameters to call Adama with
         var query = {
           'taxon_id': taxon,
