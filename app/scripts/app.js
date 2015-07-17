@@ -253,9 +253,16 @@
       var list = json.obj.result;
       var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
                   '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
+
       for (var i = 0; i < list.length; i++) {
+        var ecnum = list[i].ec_number;
+        if (ecnum === undefined) {
+          ecnum = 'Not Assigned';
+        } else {
+          ecnum = ecnum.replace(/\s/g, '<br>');
+        }
         html+='<tr><td>' + list[i].locus_id + '</td><td>'+ list[i].gene_name +
-          '</td><td>'+ list[i].ec_number + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
+          '</td><td>'+ ecnum + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
 
