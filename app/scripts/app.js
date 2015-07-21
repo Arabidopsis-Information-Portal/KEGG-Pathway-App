@@ -197,13 +197,25 @@
 
             });
 
-
-
           } else { // Not an organism specific pathway
 
-            html += '</dl>';
+            html += '<li><b><button href="#" class="btn btn-default btn-xs genelink" id="'+ id + '-link">Show KEGG orthology genes</b></li>\n';
 
+            //Ends the list
+            html += '</ul>';
+            // Puts the html in the document
             data.html(html);
+
+            $('.genelink', appContext).click(function(){
+              var id = $(this).attr('id');
+              id = id.substring(0, id.length - 5);
+              console.log(id);
+              $('#geneTaxonId', appContext).val('');
+              $('#pathwayId', appContext).val(id);
+              $('#genetab', appContext).tab('show');
+              $('form[name=gene-form]', appContext).submit();
+
+            });
           }
         };
 
@@ -256,35 +268,52 @@
 
       for (var i = 0; i < list.length; i++) {
         var ecnum = list[i].ec_number;
+        var locus = list[i].locus_id;
+        if (locus === null) {
+            locus = 'N/A';
+        }
         if (ecnum === undefined) {
           ecnum = 'Not Assigned';
         } else {
           ecnum = ecnum.replace(/\s/g, '<br>');
         }
-        html+='<tr><td>' + list[i].locus_id + '</td><td>'+ list[i].gene_name +
+        html+='<tr><td>' + locus + '</td><td>'+ list[i].gene_name +
           '</td><td>'+ ecnum + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
 
-
-      function getOrganism(json) {
-        var taxonName = json.obj.result[0].taxon_name;
-        var pathwayName = json.obj.result[0].name;
-        console.log(taxonName + '  ' + pathwayName);
-
-
-        html = '<h3>' + pathwayName + ' in ' + taxonName + '</h3>' + html;
+      function getOrganism(json2) {
+        var taxonName = json2.obj.result[0].taxon_name;
+        var pathwayName = json2.obj.result[0].name;
+        if (taxonName === null) {
+          html = '<h3>' + pathwayName + ' Reference Pathway</h3>' + html;
+        } else {
+          html = '<h3>' + pathwayName + ' in ' + taxonName + '</h3>' + html;
+        }
         $('#genes', appContext).html(html+ '</tbody></table>');
         $('#genes table', appContext).DataTable();
       }
 
-      Agave.api.adama.search(
-                {'namespace': 'kegg',
-           'service': 'kegg_pathways_v0.3',
-           'queryParams': {'taxon_id':taxonInput, 'pathway_id':pathwayInput}},
-          getOrganism,
-          showSearchError
-            );
+
+      if (taxonInput !== '') {
+
+
+        Agave.api.adama.search(
+                  {'namespace': 'kegg',
+             'service': 'kegg_pathways_v0.3',
+             'queryParams': {'taxon_id':taxonInput, 'pathway_id':pathwayInput}},
+            getOrganism,
+            showSearchError
+              );
+      } else {
+        Agave.api.adama.search(
+                  {'namespace': 'kegg',
+             'service': 'kegg_pathways_v0.3',
+             'queryParams': {'pathway_id':pathwayInput}},
+            getOrganism,
+            showSearchError
+              );
+      }
     };
 
 
@@ -415,7 +444,7 @@
       var taxon = this.geneTaxonId.value;
       var pathway = this.pathwayId.value;
 
-      if (taxon === '' || pathway === '') {
+      if (pathway === '') {
           $(this).addClass('has-error');
 
 
@@ -429,11 +458,19 @@
         taxonInput = taxon;
         pathwayInput = pathway;
         // Creates parameters to call Adama with
-        var query = {
-          'taxon_id': taxon,
-          'pathway_id':pathway
-        };
 
+        var query;
+
+        if (taxon === '') {
+          query = {
+            'pathway_id':pathway
+          };
+        } else {
+          query = {
+            'taxon_id': taxon,
+            'pathway_id':pathway
+          };
+        }
 
         // Calls Adama
         Agave.api.adama.search(
