@@ -29,14 +29,11 @@
                   x += item;
               }
           }
-
           return x;
       },
-
       'ip-address-asc': function ( a, b ) {
           return ((a < b) ? -1 : ((a > b) ? 1 : 0));
       },
-
       'ip-address-desc': function ( a, b ) {
           return ((a < b) ? 1 : ((a > b) ? -1 : 0));
       }
@@ -543,6 +540,7 @@
     	  getOrgCode,
     	  showSearchError
           );
+
 
   });
 
