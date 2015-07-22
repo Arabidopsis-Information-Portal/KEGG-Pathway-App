@@ -13,6 +13,35 @@
     $('#error', appContext).html(html);
   };
 
+  // This code is from the Datatables website to sort IP addresses but it works
+  // fine to sort EC numbers.
+  jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+      'ip-address-pre': function ( a ) {
+          var m = a.split('.'), x = '';
+
+          for(var i = 0; i < m.length; i++) {
+              var item = m[i];
+              if(item.length === 1) {
+                  x += '00' + item;
+              } else if(item.length === 2) {
+                  x += '0' + item;
+              } else {
+                  x += item;
+              }
+          }
+
+          return x;
+      },
+
+      'ip-address-asc': function ( a, b ) {
+          return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+      },
+
+      'ip-address-desc': function ( a, b ) {
+          return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+      }
+  } );
+
 
 
   // Activates the tooltip (popup) for the reset button.
@@ -259,14 +288,22 @@
       $('.data table', appContext).DataTable({'columnDefs': [ { 'targets': 2, 'orderable': false }]});
     };
 
+    // This function will show the table of the genes in a pathway.
     var showGeneList = function(json){
 
+      // Remove the displayed error if there is one
       $('#error', appContext).empty();
+
+      // Gets the list of genes from the JSON from Adama
       var list = json.obj.result;
+      // Creates a string of the html to place in the document.
       var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
                   '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
 
+      // Parses the list of genes and create the html for the table
       for (var i = 0; i < list.length; i++) {
+        // Gets the EC number and locus from the data and replaces the data
+        // with words if the data does not exist.
         var ecnum = list[i].ec_number;
         var locus = list[i].locus_id;
         if (locus === null) {
@@ -277,43 +314,51 @@
         } else {
           ecnum = ecnum.replace(/\s/g, '<br>');
         }
+        // Adds the html to the string
         html+='<tr><td>' + locus + '</td><td>'+ list[i].gene_name +
           '</td><td>'+ ecnum + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
 
+      // Creates a function that will get the organism name and pathway name that
+      // will be called after the Adama query below
       function getOrganism(json2) {
+        // Gets the taxon name and pathway name from the returned json
         var taxonName = json2.obj.result[0].taxon_name;
         var pathwayName = json2.obj.result[0].name;
+        // Creates a header with the name of the pathway and organism is applicable
         if (taxonName === null) {
           html = '<h3>' + pathwayName + ' Reference Pathway</h3>' + html;
         } else {
           html = '<h3>' + pathwayName + ' in ' + taxonName + '</h3>' + html;
         }
+        // Sets the html of the header and the table to display
         $('#genes', appContext).html(html+ '</tbody></table>');
-        $('#genes table', appContext).DataTable();
+        // Formats the table with datatables, setting the third column as an IP
+        // address (even though its an EC number) to sort properly.
+        $('#genes table', appContext).DataTable( {
+          columnDefs: [{ type: 'ip-address', targets: 2 }]
+        });
       }
 
 
+      var query;
+      // If a taxon was given, query API with taxon and pathway
       if (taxonInput !== '') {
-
-
-        Agave.api.adama.search(
-                  {'namespace': 'kegg',
-             'service': 'kegg_pathways_v0.3',
-             'queryParams': {'taxon_id':taxonInput, 'pathway_id':pathwayInput}},
-            getOrganism,
-            showSearchError
-              );
-      } else {
-        Agave.api.adama.search(
-                  {'namespace': 'kegg',
-             'service': 'kegg_pathways_v0.3',
-             'queryParams': {'pathway_id':pathwayInput}},
-            getOrganism,
-            showSearchError
-              );
+        query = {'taxon_id':taxonInput, 'pathway_id':pathwayInput};
+      } else { // Else just query with pathway
+        query = {'pathway_id':pathwayInput};
       }
+
+      // Calls Adama to get information about the pathway
+      Agave.api.adama.search(
+                {'namespace': 'kegg',
+           'service': 'kegg_pathways_v0.3',
+           'queryParams': query},
+          getOrganism,
+          showSearchError
+            );
+
     };
 
 
