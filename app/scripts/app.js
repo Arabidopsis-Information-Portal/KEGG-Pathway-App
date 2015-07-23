@@ -142,7 +142,7 @@
       // Creates a string of html to place into the document
       // This starts off the html for the table, with headers and classes that will
       // work with Datatables
-      var html = '<h3>' + organismName + '</h3><table class="table hover row-border stripe" width="100%"> <thead><tr>'+
+      var html = '<h3>' + organismName + '</h3><table class="table display" width="100%"> <thead><tr>'+
                   '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th> <th>Pathway Map</th>' +
                   '</tr></thead><tbody>';
 
@@ -297,7 +297,7 @@
       // Gets the list of genes from the JSON from Adama
       var list = json.obj.result;
       // Creates a string of the html to place in the document.
-      var html = '<table class="table hover row-border stripe" width="100%"> <thead><tr>'+
+      var html = '<table class="table display" width="100%"> <thead><tr>'+
                   '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
 
       // Parses the list of genes and create the html for the table
@@ -427,8 +427,6 @@
         	  showSearchError
               );
       }
-
-
     });
 
     // Runs when the input in the taxon text box is changed
