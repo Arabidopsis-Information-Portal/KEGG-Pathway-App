@@ -65,27 +65,32 @@
           </div>
 
           <button type="submit" class="btn btn-success" id=submit>Submit</button>
-          <button type="button" class="btn btn-default" id="reset" data-toggle="tooltip" data-placement="right" title="Resets to display KEGG reference pathways ">Reset</button>
+          <button type="button" class="btn btn-danger" id="reset" data-toggle="tooltip" data-placement="right" title="Resets to display KEGG reference pathways">Reset</button>
         </div>
       </form>
-      <br/>
+      <span id="taxon-form-error" class="err-text" style="display: none;">Invalid taxon ID format. Should be only numerals.</span><br>
       <div class="data">Loading...</div>
     </div>
     <div role="tabpanel" class="tab-pane fade" id="gene-table">
       <form name="gene-form" class="form-inline">
         <div class="form-group">
           <label for="gene-taxonId">NCBI Taxon ID (e.g. 3702)</label>
-          <input type="text" class="form-control" id="geneTaxonId" placeholder="">
+          <input type="text" class="form-control" id="geneTaxonId" value="3702"><br>
+          <span id="gene-form-tax-error" class="err-text" style="display: none;">Invalid taxon ID format. Should only have numerals.</span><br>
 	       </div>
          &nbsp;&nbsp;&nbsp;&nbsp;
 	        <div class ="form-group">
           <label for="exampleInputName2"> KEGG Pathway ID (e.g.00010)</label>
-          <input type="text" class="form-control" id="pathwayId" placeholder="">
+          <input type="text" class="form-control" id="pathwayId" value="00010"><br>
+          <span id="gene-form-path-error" class="err-text" style="display: none;"></span><br>
         </div>
-        <button type="submit" class="btn btn-success" id=submit>Submit</button>
+        <div class="form-group">
+          <button type="submit" class="btn btn-success" id="submit-gene">Submit</button>
+          <button type="button" class="btn btn-danger" id="reset-gene" >Clear</button>
+          <br><br>
+        </div>
       </form>
-      <br/>
-      <div id="genes"></div>
+      <div id="genes">Enter a taxon ID and a pathway ID.</div>
     </div>
   </div>
 

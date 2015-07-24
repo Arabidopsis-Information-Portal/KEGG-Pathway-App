@@ -413,6 +413,10 @@
             getOrgCode,
             showSearchError
               );
+        // Removes errors from the form that is now hidden
+        $('form[name=taxon_form]', appContext).removeClass('has-error');
+        $('#submit', appContext).removeAttr('disabled');
+        $('#taxon-form-error').fadeOut(200);
       } else {
         $('#taxon_textbox', appContext).collapse('show');
         $('#taxonId', appContext).val('');
@@ -443,11 +447,13 @@
         $('form[name=taxon_form]', appContext).removeClass('has-error');
         // Enable the submit button
         $('#submit', appContext).removeAttr('disabled');
+        $('#taxon-form-error').fadeOut(200);
       } else { // input is invalid
         // Change the textbox appearance to having an error (red)
         $('form[name=taxon_form]', appContext).addClass('has-error');
         // Disable the submit button
         $('#submit', appContext).attr('disabled', 'disabled');
+        $('#taxon-form-error', appContext).fadeIn(200);
       }
     });
 
@@ -463,6 +469,7 @@
         $('#submit', appContext).removeAttr('disabled');
         // Removes the error message if it exists
         $('#error', appContext).empty();
+        $('#taxon-form-error', appContext).fadeOut(200);
         // resets the organism and input variables
         organism = null;
         input = '';
@@ -486,12 +493,39 @@
       // Gets the input values
       var taxon = this.geneTaxonId.value;
       var pathway = this.pathwayId.value;
+      var flag = true;
+      var taxonRegex = /^[0-9]+$/;
+      var pathwayRegex = /\b\d{5}\b/g;
+
+      $('#gene-form-path-error',appContext).empty();
 
       if (pathway === '') {
           $(this).addClass('has-error');
+          $('#gene-form-path-error', appContext).html('Pathway ID is required.');
+          $('#gene-form-path-error', appContext).fadeIn(200);
+          flag = false;
+      }
+
+      if (!(taxonRegex.test(taxon) || taxon === '')) {
+        $('#gene-form-tax-error', appContext).fadeIn(200);
+        flag = false;
+      }
 
 
-      } else {
+      if (!(pathwayRegex.test(pathway) || pathway === '')) {
+        $(this).addClass('has-error');
+        $('#gene-form-path-error', appContext).html('Invalid pathway ID format. Should be a five digit number.');
+        $('#gene-form-path-error', appContext).fadeIn(200);
+        flag = false;
+      }
+
+      if (flag) {
+
+        $('#gene-form-path-error', appContext).fadeOut(200);
+        $('#gene-form-tax-error', appContext).fadeOut(200);
+        $('form[name=gene-form]', appContext).removeClass('has-error');
+        $('#submit-gene', appContext).removeAttr('disabled');
+
         // Sets the document to display Reloading
         $('#genes', appContext).html('Loading...');
 
@@ -528,10 +562,58 @@
 
 
     // Runs when the input ion the genes page is changed
-    $('form[name=gene-form] input', appContext).on('input', function() {
+    $('form[name=gene-form]', appContext).on('input', function() {
+      var taxon = this.geneTaxonId.value;
+      var pathway = this.pathwayId.value;
+      var flag = true;
+      var taxonRegex = /^[0-9]+$/;
+      var pathwayRegex = /^[0-9]{1,5}$/;
+
+      if (!(taxonRegex.test(taxon) || taxon === '')) {
+        $('#gene-form-tax-error', appContext).fadeIn(200);
+        flag = false;
+      } else {
+        $('#gene-form-tax-error', appContext).fadeOut(200);
+      }
+
+      if (!(pathwayRegex.test(pathway) || pathway === '')) {
+        $('#gene-form-path-error', appContext).html('Invalid pathway ID format. Should be a five digit number.');
+        $('#gene-form-path-error', appContext).fadeIn(200);
+        flag = false;
+      } else {
+        $('#gene-form-path-error', appContext).fadeOut(200);
+      }
+
       // Remove the error for the form
-      $('form[name=gene-form]', appContext).removeClass('has-error');
+      if (flag) {
+        $('form[name=gene-form]', appContext).removeClass('has-error');
+        $('#submit-gene', appContext).removeAttr('disabled');
+      } else {
+        $('#submit-gene', appContext).attr('disabled', 'disabled');
+        $(this).addClass('has-error');
+      }
     });
+
+
+    // When the reset button is called
+    $('#reset-gene', appContext).on('click', function() {
+        // Clear the text boxes
+        $('#geneTaxonId', appContext).val('');
+        $('#pathwayId', appContext).val('');
+        // Change the text to reloading
+        $('#genes', appContext).html('Enter a taxon ID and a pathway ID.');
+        // Set the textbox as having no errors
+        $('form[name=gene-form]', appContext).removeClass('has-error');
+        //Enable submit button again
+        $('#submit', appContext).removeAttr('disabled');
+        // Removes the error message if it exists
+        $('#error', appContext).html();
+        $('#gene-form-path-error', appContext).fadeOut(200);
+        $('#gene-form-tax-error', appContext).fadeOut(200);
+        taxonInput = '';
+        pathwayInput = '';
+    });
+
 
     // Calls Adama
     Agave.api.adama.search(

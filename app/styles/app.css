@@ -6,3 +6,7 @@
 #KEGG-Pathway-App-container p {
   text-indent: 30px;
 }
+
+#KEGG-Pathway-App-container .err-text {
+  color: red;
+}
