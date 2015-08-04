@@ -6,10 +6,16 @@
   // This displays an error when Adama fails
   var showSearchError = function(json) {
     // Displays the error on the Javascript console
-    console.error('Search returned error! Status=' + json.obj.status + ' Message=' + json.obj.message);
-    // Creates an error alert on the page
-    console.log(json);
-    var html = '<div class="alert alert-danger" role="alert">' + json.obj.message + '</div>';
+    var html;
+    try {
+      console.error('Search returned error! Status=' + json.obj.status + ' Message=' + json.obj.message);
+      // Creates an error alert on the page
+      console.log(json);
+    
+      html = '<div class="alert alert-danger" role="alert">' + json.obj.message + '</div>';
+    } catch (error) {
+      html = '<div class="alert alert-danger" role="alert">Error: Cannot access Araport\'s webservices</div>';
+    }
     $('#error', appContext).html(html);
   };
 
