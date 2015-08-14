@@ -417,9 +417,10 @@
       console.log(data);
       console.log(JSON.stringify(treeData));
 
+
       var margin = {top: 20, right: 120, bottom: 20, left: 120},
       width = 960 - margin.right - margin.left,
-      height = 900 - margin.top - margin.bottom;
+      height = 300 + eclist.length*8 - margin.top - margin.bottom;
 
 
 
