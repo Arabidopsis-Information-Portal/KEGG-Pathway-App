@@ -11,7 +11,7 @@
       console.error('Search returned error! Status=' + json.obj.status + ' Message=' + json.obj.message);
       // Creates an error alert on the page
       console.log(json);
-    
+
       html = '<div class="alert alert-danger" role="alert">' + json.obj.message + '</div>';
     } catch (error) {
       html = '<div class="alert alert-danger" role="alert">Error: Cannot access Araport\'s webservices</div>';
@@ -22,30 +22,30 @@
   // This code is from the Datatables website to sort IP addresses but it works
   // fine to sort EC numbers.
   jQuery.extend( jQuery.fn.dataTableExt.oSort, {
-      'ip-address-pre': function ( a ) {
-          var m = a.split('.'), x = '';
+    'ip-address-pre': function ( a ) {
+      var m = a.split('.'), x = '';
 
-          for(var i = 0; i < m.length; i++) {
-              var item = m[i];
-              if(item.length === 1) {
-                  x += '00' + item;
-              } else if(item.length === 2) {
-                  x += '0' + item;
-              } else {
-                  x += item;
-              }
-          }
-
-          return x;
-      },
-
-      'ip-address-asc': function ( a, b ) {
-          return ((a < b) ? -1 : ((a > b) ? 1 : 0));
-      },
-
-      'ip-address-desc': function ( a, b ) {
-          return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+      for(var i = 0; i < m.length; i++) {
+        var item = m[i];
+        if(item.length === 1) {
+          x += '00' + item;
+        } else if(item.length === 2) {
+          x += '0' + item;
+        } else {
+          x += item;
+        }
       }
+
+      return x;
+    },
+
+    'ip-address-asc': function ( a, b ) {
+      return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+    },
+
+    'ip-address-desc': function ( a, b ) {
+      return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+    }
   } );
 
 
@@ -84,7 +84,7 @@
     }
     // Puts the picture and link in the body of the modal
     modal.find('.modal-body').html('<img src="http://rest.kegg.jp/get/' + org + id + '/image"><br/>' +
-                  '<a href="http://www.kegg.jp/kegg-bin/highlight_pathway?map=' + org + id  +'" target="_blank">Image at KEGG</a>');
+    '<a href="http://www.kegg.jp/kegg-bin/highlight_pathway?map=' + org + id  +'" target="_blank">Image at KEGG</a>');
   });
 
 
@@ -125,12 +125,12 @@
 
         // Calls adama using the parameters above
         Agave.api.adama.search(
-                {'namespace': 'kegg',
-                'service': 'kegg_pathways_v0.3',
-                'queryParams': query},
-                showOrgPathways,
-                showSearchError
-              );
+          {'namespace': 'kegg',
+          'service': 'kegg_pathways_v0.3',
+          'queryParams': query},
+          showOrgPathways,
+          showSearchError
+        );
 
       }
     };
@@ -141,16 +141,16 @@
       $('#error', appContext).empty();
       // JavaScript === and !== operators test value and type.
       if (json.obj.status !== 'success') {
-          console.log('Search result status is NOT good!');
-          return (false);
+        console.log('Search result status is NOT good!');
+        return (false);
       }
 
       // Creates a string of html to place into the document
       // This starts off the html for the table, with headers and classes that will
       // work with Datatables
       var html = '<h3>' + organismName + '</h3><table class="table display" width="100%"> <thead><tr>'+
-                  '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th> <th>Pathway Map</th>' +
-                  '</tr></thead><tbody>';
+      '<th>KEGG Pathway ID</th> <th>KEGG Pathway Name</th> <th>Pathway Map</th>' +
+      '</tr></thead><tbody>';
 
       // Loops through every pathway of the returned json
       for (var i = 0; i < json.obj.result.length; i++) {
@@ -159,20 +159,20 @@
         // adds the html for one row in the table
         //First column is just the pathway ID
         html += '<tr><td>' + entry.pathway_id + '</td>' +
-                // Second row is the name of the pathway...
-                '<td>' + entry.pathway_name +
-                // and the button to expand. The button is a linked (<a>) icon (<span>)
-                // Each button is given a unique id that is in the form b + pathway ID (e.g. "b00010")
-                // so the button can be identified and the right infromation can be retrieved later
-                '  <a role="button" data-toggle="collapse" href="#' + entry.pathway_id +
-                '" aria-expanded="false" aria-controls="' + entry.pathway_id + '" id="b' + entry.pathway_id + '">' +
-                '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><br>\n' +
-                // The div holds the area that will be expanded, and is given the id of just the pathway ID (e.g. "00010")
-                '<div id="' + entry.pathway_id + '" class="pinfo collapse">Loading...</div></div></td>' +
-                // Third (last) column is a button to show the modal (popup)
-                // Data is sent through data-id and data-name attributes
-                '<td><button type="button" class="btn btn-default btn-xs" '+ 'data-toggle="modal" data-target="#exampleModal" '+
-                'data-id="' + entry.pathway_id + '" data-name="' + entry.pathway_name + '">Show</button></td></tr>\n';
+        // Second row is the name of the pathway...
+        '<td>' + entry.pathway_name +
+        // and the button to expand. The button is a linked (<a>) icon (<span>)
+        // Each button is given a unique id that is in the form b + pathway ID (e.g. "b00010")
+        // so the button can be identified and the right infromation can be retrieved later
+        '  <a role="button" data-toggle="collapse" href="#' + entry.pathway_id +
+        '" aria-expanded="false" aria-controls="' + entry.pathway_id + '" id="b' + entry.pathway_id + '">' +
+        '<span class="glyphicon glyphicon-collapse-down" aria-hidden="true"></a><br>\n' +
+        // The div holds the area that will be expanded, and is given the id of just the pathway ID (e.g. "00010")
+        '<div id="' + entry.pathway_id + '" class="pinfo collapse">Loading...</div></div></td>' +
+        // Third (last) column is a button to show the modal (popup)
+        // Data is sent through data-id and data-name attributes
+        '<td><button type="button" class="btn btn-default btn-xs" '+ 'data-toggle="modal" data-target="#exampleModal" '+
+        'data-id="' + entry.pathway_id + '" data-name="' + entry.pathway_name + '">Show</button></td></tr>\n';
       }
       // Ends the html for the table
       html += '</tbody></table>';
@@ -270,12 +270,12 @@
         // Calls Adama for the pathway info
         if ($(this, appContext).html() === 'Loading...') {
           Agave.api.adama.search(
-                    {'namespace': 'kegg',
-               'service': 'kegg_pathways_v0.3',
-               'queryParams': query},
-              showPathwayInfo, //Calls showPathwayInfo with the results if call is successful
-              showSearchError // Calls showSearchError if call fails
-                );
+            {'namespace': 'kegg',
+            'service': 'kegg_pathways_v0.3',
+            'queryParams': query},
+            showPathwayInfo, //Calls showPathwayInfo with the results if call is successful
+            showSearchError // Calls showSearchError if call fails
+          );
         }
         // Sets the button that show pathway info from expand to collapse
         $('#b' + id, appContext).html('<span class="glyphicon glyphicon-collapse-up" aria-hidden="true">');
@@ -304,8 +304,10 @@
       var list = json.obj.result;
       // Creates a string of the html to place in the document.
       var html = '<table class="table display" width="100%"> <thead><tr>'+
-                  '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
+      '<th>Gene Locus</th> <th>Gene Name</th><th>EC Number</th><th>KEGG Orthology ID</th></tr></thead><tbody>\n';
 
+
+      var eclist = [];
       // Parses the list of genes and create the html for the table
       for (var i = 0; i < list.length; i++) {
         // Gets the EC number and locus from the data and replaces the data
@@ -313,16 +315,18 @@
         var ecnum = list[i].ec_number;
         var locus = list[i].locus_id;
         if (locus === null) {
-            locus = 'N/A';
+          locus = 'N/A';
         }
         if (ecnum === undefined) {
           ecnum = 'Not Assigned';
         } else {
+          eclist = eclist.concat(ecnum.split(/\s/g));
           ecnum = ecnum.replace(/\s/g, '<br>');
+
         }
         // Adds the html to the string
         html+='<tr><td>' + locus + '</td><td>'+ list[i].gene_name +
-          '</td><td>'+ ecnum + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
+        '</td><td>'+ ecnum + '</td><td>'+ list[i].kegg_orthology_id + '</td></tr>\n';
 
       }
 
@@ -345,6 +349,7 @@
         $('#genes table', appContext).DataTable( {
           columnDefs: [{ type: 'ip-address', targets: 2 }]
         });
+        update(root);
       }
 
 
@@ -358,15 +363,191 @@
 
       // Calls Adama to get information about the pathway
       Agave.api.adama.search(
-                {'namespace': 'kegg',
-           'service': 'kegg_pathways_v0.3',
-           'queryParams': query},
-          getOrganism,
-          showSearchError
-            );
+        {'namespace': 'kegg',
+        'service': 'kegg_pathways_v0.3',
+        'queryParams': query},
+        getOrganism,
+        showSearchError
+      );
+
+      //var treeData = {'name':'Top Level', "parent": "null", "children": []};
+      var data = {};
+      for (i = 0; i < eclist.length; i++) {
+        var ecnum = eclist[i].split('.');
+        //console.log(ecnum);
+
+        var level = data;
+        for (var j = 0; j < ecnum.length; j++) {
+          if (ecnum[j] in level) {
+            level = level[ecnum[j]];
+
+          } else {
+            level[ecnum[j]] = {};
+            level = level[ecnum[j]];
+
+          }
+
+        }
+
+      }
+
+      function convertTreeData(ecdata, name, parent) {
+        var keys = Object.keys(ecdata);
+        if (keys.length === 0) {
+          return {'name':name, 'parent':parent};
+        }
+        var things = [];
+        for (var i = 0; i < keys.length; i++) {
+          var key = keys[i];
+          var x = convertTreeData(ecdata[key], name + key + '.', name + '.');
+          console.log(x);
+          things.push(x);
+        }
+        console.log(things);
+        var level = {'name': name, 'parent':parent};
+        if (things.length !== 0) {
+          level.children = things;
+        }
+
+        return level;
+
+      }
+      var treeData = convertTreeData(data, '', null);
+
+      console.log(data);
+      console.log(JSON.stringify(treeData));
+
+      var margin = {top: 20, right: 120, bottom: 20, left: 120},
+      width = 960 - margin.right - margin.left,
+      height = 900 - margin.top - margin.bottom;
+
+
+
+      i = 0;
+      var duration = 750,
+      root;
+
+      var tree = d3.layout.tree()
+      .size([height, width]);
+
+      var diagonal = d3.svg.diagonal()
+      .projection(function(d) { return [d.y, d.x]; });
+
+
+      var svg = d3.select("#genetree").append("svg")
+      .attr("width", width + margin.right + margin.left)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      root = treeData;
+      root.x0 = height / 2;
+      root.y0 = 0;
+
+
+
+      d3.select(self.frameElement).style("height", "500px");
+
+      function update(source) {
+
+        // Compute the new tree layout.
+        var nodes = tree.nodes(root).reverse(),
+        links = tree.links(nodes);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function(d) { d.y = d.depth * 180; });
+
+        // Update the nodes…
+        var node = svg.selectAll("g.node")
+        .data(nodes, function(d) { return d.id || (d.id = ++i); });
+
+        // Enter any new nodes at the parent's previous position.
+        var nodeEnter = node.enter().append("g")
+        .attr("class", "node")
+        .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+        .on("click", click);
+
+        nodeEnter.append("circle")
+        .attr("r", 1e-6)
+        .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+        nodeEnter.append("text")
+        .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+        .text(function(d) { return d.name; })
+        .style("fill-opacity", 1e-6);
+
+        // Transition nodes to their new position.
+        var nodeUpdate = node.transition()
+        .duration(duration)
+        .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
+
+        nodeUpdate.select("circle")
+        .attr("r", 10)
+        .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
+
+        nodeUpdate.select("text")
+        .style("fill-opacity", 1);
+
+        // Transition exiting nodes to the parent's new position.
+        var nodeExit = node.exit().transition()
+        .duration(duration)
+        .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+        .remove();
+
+        nodeExit.select("circle")
+        .attr("r", 1e-6);
+
+        nodeExit.select("text")
+        .style("fill-opacity", 1e-6);
+
+        // Update the links…
+        var link = svg.selectAll("path.link")
+        .data(links, function(d) { return d.target.id; });
+
+        // Enter any new links at the parent's previous position.
+        link.enter().insert("path", "g")
+        .attr("class", "link")
+        .attr("d", function(d) {
+          var o = {x: source.x0, y: source.y0};
+          return diagonal({source: o, target: o});
+        });
+
+        // Transition links to their new position.
+        link.transition()
+        .duration(duration)
+        .attr("d", diagonal);
+
+        // Transition exiting nodes to the parent's new position.
+        link.exit().transition()
+        .duration(duration)
+        .attr("d", function(d) {
+          var o = {x: source.x, y: source.y};
+          return diagonal({source: o, target: o});
+        })
+        .remove();
+
+        // Stash the old positions for transition.
+        nodes.forEach(function(d) {
+          d.x0 = d.x;
+          d.y0 = d.y;
+        });
+      }
+
+      // Toggle children on click.
+      function click(d) {
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else {
+          d.children = d._children;
+          d._children = null;
+        }
+        update(d);
+      }
 
     };
-
 
 
 
@@ -397,12 +578,12 @@
 
       // Calls Adama
       Agave.api.adama.search(
-                {'namespace': 'kegg',
-      	   'service': 'kegg_pathways_v0.3',
-      	   'queryParams': query},
-      	  getOrgCode,
-      	  showSearchError
-            );
+        {'namespace': 'kegg',
+        'service': 'kegg_pathways_v0.3',
+        'queryParams': query},
+        getOrgCode,
+        showSearchError
+      );
     });
 
 
@@ -413,12 +594,12 @@
         input = '3702';
         $('.data', appContext).html('Reloading...');
         Agave.api.adama.search(
-                  {'namespace': 'kegg',
-             'service': 'kegg_pathways_v0.3',
-             'queryParams': {'taxon_id':'3702'}},
-            getOrgCode,
-            showSearchError
-              );
+          {'namespace': 'kegg',
+          'service': 'kegg_pathways_v0.3',
+          'queryParams': {'taxon_id':'3702'}},
+          getOrgCode,
+          showSearchError
+        );
         // Removes errors from the form that is now hidden
         $('form[name=taxon_form]', appContext).removeClass('has-error');
         $('#submit', appContext).removeAttr('disabled');
@@ -430,12 +611,12 @@
         organismName = 'KEGG Reference Pathways';
         $('.data', appContext).html('Reloading...');
         Agave.api.adama.search(
-                  {'namespace': 'kegg',
-        	   'service': 'kegg_pathways_v0.3',
-        	   'queryParams': {}},
-        	  showSearchResult1,
-        	  showSearchError
-              );
+          {'namespace': 'kegg',
+          'service': 'kegg_pathways_v0.3',
+          'queryParams': {}},
+          showSearchResult1,
+          showSearchError
+        );
       }
     });
 
@@ -465,29 +646,29 @@
 
     // When the reset button is called
     $('#reset', appContext).on('click', function() {
-        // Clear the taxon text box
-        $('#taxonId', appContext).val('');
-        // Change the text to reloading
-        $('.data', appContext).html('Reloading...');
-        // Set the textbox as having no errors
-        $('form[name=taxon_form]', appContext).removeClass('has-error');
-        //Enable submit button again
-        $('#submit', appContext).removeAttr('disabled');
-        // Removes the error message if it exists
-        $('#error', appContext).empty();
-        $('#taxon-form-error', appContext).fadeOut(200);
-        // resets the organism and input variables
-        organism = null;
-        input = '';
-        organismName = 'KEGG Reference Pathways';
-        // Calls Adama with no parameters
-        Agave.api.adama.search(
-                  {'namespace': 'kegg',
-        	   'service': 'kegg_pathways_v0.3',
-        	   'queryParams': {}},
-        	  showSearchResult1,
-        	  showSearchError
-              );
+      // Clear the taxon text box
+      $('#taxonId', appContext).val('');
+      // Change the text to reloading
+      $('.data', appContext).html('Reloading...');
+      // Set the textbox as having no errors
+      $('form[name=taxon_form]', appContext).removeClass('has-error');
+      //Enable submit button again
+      $('#submit', appContext).removeAttr('disabled');
+      // Removes the error message if it exists
+      $('#error', appContext).empty();
+      $('#taxon-form-error', appContext).fadeOut(200);
+      // resets the organism and input variables
+      organism = null;
+      input = '';
+      organismName = 'KEGG Reference Pathways';
+      // Calls Adama with no parameters
+      Agave.api.adama.search(
+        {'namespace': 'kegg',
+        'service': 'kegg_pathways_v0.3',
+        'queryParams': {}},
+        showSearchResult1,
+        showSearchError
+      );
     });
 
 
@@ -504,12 +685,12 @@
       var pathwayRegex = /\b\d{5}\b/g;
 
       $('#gene-form-path-error',appContext).empty();
-
+      d3.select("svg").remove();
       if (pathway === '') {
-          $(this).addClass('has-error');
-          $('#gene-form-path-error', appContext).html('Pathway ID is required.');
-          $('#gene-form-path-error', appContext).fadeIn(200);
-          flag = false;
+        $(this).addClass('has-error');
+        $('#gene-form-path-error', appContext).html('Pathway ID is required.');
+        $('#gene-form-path-error', appContext).fadeIn(200);
+        flag = false;
       }
 
       if (!(taxonRegex.test(taxon) || taxon === '')) {
@@ -557,12 +738,12 @@
 
         // Calls Adama
         Agave.api.adama.search(
-                {'namespace': 'kegg',
-                'service': 'genes_by_kegg_pathway_v0.3',
-                'queryParams': query},
+          {'namespace': 'kegg',
+          'service': 'genes_by_kegg_pathway_v0.3',
+          'queryParams': query},
           showGeneList,
           showSearchError
-            );
+        );
       }
     });
 
@@ -603,32 +784,32 @@
 
     // When the reset button is called
     $('#reset-gene', appContext).on('click', function() {
-        // Clear the text boxes
-        $('#geneTaxonId', appContext).val('');
-        $('#pathwayId', appContext).val('');
-        // Change the text to reloading
-        $('#genes', appContext).html('Enter a taxon ID and a pathway ID.');
-        // Set the textbox as having no errors
-        $('form[name=gene-form]', appContext).removeClass('has-error');
-        //Enable submit button again
-        $('#submit', appContext).removeAttr('disabled');
-        // Removes the error message if it exists
-        $('#error', appContext).html();
-        $('#gene-form-path-error', appContext).fadeOut(200);
-        $('#gene-form-tax-error', appContext).fadeOut(200);
-        taxonInput = '';
-        pathwayInput = '';
+      // Clear the text boxes
+      $('#geneTaxonId', appContext).val('');
+      $('#pathwayId', appContext).val('');
+      // Change the text to reloading
+      $('#genes', appContext).html('Enter a taxon ID and a pathway ID.');
+      // Set the textbox as having no errors
+      $('form[name=gene-form]', appContext).removeClass('has-error');
+      //Enable submit button again
+      $('#submit', appContext).removeAttr('disabled');
+      // Removes the error message if it exists
+      $('#error', appContext).html();
+      $('#gene-form-path-error', appContext).fadeOut(200);
+      $('#gene-form-tax-error', appContext).fadeOut(200);
+      taxonInput = '';
+      pathwayInput = '';
     });
 
 
     // Calls Adama
     Agave.api.adama.search(
-              {'namespace': 'kegg',
-    	   'service': 'kegg_pathways_v0.3',
-    	   'queryParams': {'taxon_id':input}},
-    	  getOrgCode,
-    	  showSearchError
-          );
+      {'namespace': 'kegg',
+      'service': 'kegg_pathways_v0.3',
+      'queryParams': {'taxon_id':input}},
+      getOrgCode,
+      showSearchError
+    );
 
   });
 
