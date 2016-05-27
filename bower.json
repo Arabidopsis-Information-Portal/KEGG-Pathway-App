@@ -2,8 +2,8 @@
   "name": "testapp",
   "private": true,
   "dependencies": {
-    "datatables": "~1.10.3",
-    "datatables-bootstrap3": "*",
+    "datatables.net": "^1.10.12",
+    "datatables.net-bs": "^1.10.12",
     "d3": "~3.5.6"
   }
 }

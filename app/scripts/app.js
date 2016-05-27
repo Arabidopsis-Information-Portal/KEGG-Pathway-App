@@ -800,6 +800,7 @@
       $('#gene-form-tax-error', appContext).fadeOut(200);
       taxonInput = '';
       pathwayInput = '';
+      $('#genetree', appContext).empty();
     });
 
 
