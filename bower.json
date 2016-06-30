@@ -1,5 +1,5 @@
 {
-  "name": "testapp",
+  "name": "kegg-pathway-app",
   "private": true,
   "dependencies": {
     "datatables.net": "^1.10.12",

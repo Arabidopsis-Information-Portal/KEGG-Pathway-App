@@ -1,0 +1,16 @@
+{
+  "namespace" : "kegg-pathway-app",
+  "name": "KEGG Pathway App",
+  "description": "Display pathway data (in table format) obtained from the KEGG database.",
+  "html": "app.html",
+  "scripts": [
+    "scripts/app.js"
+  ],
+  "styles": [
+    "styles/app.css"
+  ],
+  "tags": [
+    "arabidopsis", "pathway", "KEGG"
+  ],
+  "icon": "app/images/logo.gif"
+}
